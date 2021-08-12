@@ -1,6 +1,8 @@
 package ru.gb.karachev.sprite;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -31,6 +33,10 @@ public class MainShip extends Sprite {
     private Vector2 bulletV;
     private float bulletHeight;
     private int bulletDamage;
+    private Sound sound;
+    private float time;
+    private float delay;
+
 
     public MainShip(TextureAtlas atlas, BulletPool bulletPool) {
         super(atlas.findRegion("main_ship"), 1, 2, 2);
@@ -40,12 +46,19 @@ public class MainShip extends Sprite {
         bulletV = new Vector2(0, 0.5f);
         bulletHeight = 0.01f;
         bulletDamage = 1;
+        sound = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet.wav"));
+        delay = 0.2f;
     }
 
     @Override
     public void update(float delta) {
         super.update(delta);
         pos.mulAdd(v, delta);
+        time += delta;
+        if (time > delay) {
+            shoot();
+            time %= delay;
+        }
 //        if (getRight() > worldBounds.getRight()) {
 //            setRight(worldBounds.getRight());
 //            stop();
@@ -168,5 +181,10 @@ public class MainShip extends Sprite {
         Bullet bullet = bulletPool.obtain();
         bulletPos.set(pos.x, pos.y + getHalfHeight());
         bullet.set(this, bulletRegion, bulletPos, bulletV, bulletHeight, worldBounds, bulletDamage);
+        sound.play(0.1f);
+    }
+
+    public void dispose() {
+        sound.dispose();
     }
 }
