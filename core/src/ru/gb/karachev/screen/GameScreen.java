@@ -7,11 +7,15 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.List;
+
 import ru.gb.karachev.base.BaseScreen;
 import ru.gb.karachev.math.Rect;
 import ru.gb.karachev.pool.BulletPool;
 import ru.gb.karachev.pool.EnemyPool;
 import ru.gb.karachev.sprite.Background;
+import ru.gb.karachev.sprite.Bullet;
+import ru.gb.karachev.sprite.EnemyShip;
 import ru.gb.karachev.sprite.MainShip;
 import ru.gb.karachev.sprite.Star;
 import ru.gb.karachev.utils.EnemyEmitter;
@@ -126,7 +130,18 @@ public class GameScreen extends BaseScreen {
     }
 
     private void checkCollisions() {
-
+        List<Bullet> bullets = bulletPool.getActiveSprites();
+        for (EnemyShip enemy : enemyPool.getActiveSprites()) {
+            if (enemy.pos.dst(mainShip.pos) <= mainShip.getHalfHeight()) {
+                enemy.destroy();
+            }
+            for (Bullet bullet : bullets) {
+                if (bullet.getOwner().equals(mainShip) &&
+                        bullet.pos.dst(enemy.pos) <= enemy.getHalfHeight()) {
+                    enemy.destroy();
+                }
+            }
+        }
     }
 
     private void freeAllDestroyed() {
