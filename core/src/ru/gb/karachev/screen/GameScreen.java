@@ -17,7 +17,9 @@ import ru.gb.karachev.pool.ExplosionPool;
 import ru.gb.karachev.sprite.Background;
 import ru.gb.karachev.sprite.Bullet;
 import ru.gb.karachev.sprite.EnemyShip;
+import ru.gb.karachev.sprite.GameOverLabel;
 import ru.gb.karachev.sprite.MainShip;
+import ru.gb.karachev.sprite.NewGameButton;
 import ru.gb.karachev.sprite.Star;
 import ru.gb.karachev.utils.EnemyEmitter;
 
@@ -27,6 +29,9 @@ public class GameScreen extends BaseScreen {
 
     private Texture bg;
     private Background background;
+
+    private GameOverLabel gameOverLabel;
+    private NewGameButton newGameButton;
 
     private TextureAtlas atlas;
 
@@ -61,6 +66,9 @@ public class GameScreen extends BaseScreen {
         laserSound = Gdx.audio.newSound(Gdx.files.internal("sounds/laser.wav"));
         mainShip = new MainShip(atlas, bulletPool, explosionPool, laserSound);
 
+        gameOverLabel = new GameOverLabel(atlas);
+        newGameButton = new NewGameButton(atlas, this);
+
         bulletSound = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet.wav"));
         enemyEmitter = new EnemyEmitter(worldBounds, bulletSound, enemyPool, atlas);
 
@@ -86,6 +94,8 @@ public class GameScreen extends BaseScreen {
             star.resize(worldBounds);
         }
         mainShip.resize(worldBounds);
+        gameOverLabel.resize(worldBounds);
+        newGameButton.resize(worldBounds);
     }
 
     @Override
@@ -105,12 +115,14 @@ public class GameScreen extends BaseScreen {
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
         mainShip.touchDown(touch, pointer, button);
+        newGameButton.touchDown(touch, pointer, button);
         return false;
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer, int button) {
         mainShip.touchUp(touch, pointer, button);
+        newGameButton.touchUp(touch, pointer, button);
         return false;
     }
 
@@ -192,8 +204,18 @@ public class GameScreen extends BaseScreen {
             mainShip.draw(batch);
             bulletPool.drawActiveSprites(batch);
             enemyPool.drawActiveSprites(batch);
+        } else {
+            gameOverLabel.draw(batch);
+            newGameButton.draw(batch);
         }
         explosionPool.drawActiveSprites(batch);
         batch.end();
+    }
+
+    public void reset() {
+        enemyPool.reset();
+        bulletPool.reset();
+        mainShip.pos.x = worldBounds.pos.x;
+        mainShip.flushDestroy();
     }
 }
