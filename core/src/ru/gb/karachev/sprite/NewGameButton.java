@@ -8,6 +8,9 @@ import ru.gb.karachev.screen.GameScreen;
 
 public class NewGameButton extends BaseButton {
 
+    private static final float HEIGHT = 0.05f;
+    private static final float TOP_MARGIN = -0.012f;
+
     private final GameScreen gameScreen;
 
     public NewGameButton(TextureAtlas atlas, GameScreen gameScreen) {
@@ -16,13 +19,13 @@ public class NewGameButton extends BaseButton {
     }
 
     @Override
-    public void action() {
-        gameScreen.reset();
+    public void resize(Rect worldBounds) {
+        setHeightProportion(HEIGHT);
+        setTop(TOP_MARGIN);
     }
 
     @Override
-    public void resize(Rect worldBounds) {
-        setHeightProportion(0.06f);
-        pos.set(worldBounds.pos.x, worldBounds.pos.y - getHeight());
+    public void action() {
+        gameScreen.startNewGame();
     }
 }
