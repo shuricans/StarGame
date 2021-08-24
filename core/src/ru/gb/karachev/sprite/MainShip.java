@@ -2,6 +2,7 @@ package ru.gb.karachev.sprite;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 
@@ -25,7 +26,9 @@ public class MainShip extends Ship {
     private int leftPointer = INVALID_POINTER;
     private int rightPointer = INVALID_POINTER;
 
-    public MainShip(TextureAtlas atlas, BulletPool bulletPool, ExplosionPool explosionPool, Sound bulletSound) {
+    private final FlameMainShip flame;
+
+    public MainShip(TextureAtlas atlas, TextureAtlas flames, BulletPool bulletPool, ExplosionPool explosionPool, Sound bulletSound) {
         super(atlas.findRegion("main_ship"), 1, 2, 2);
         this.bulletPool = bulletPool;
         this.explosionPool = explosionPool;
@@ -37,6 +40,7 @@ public class MainShip extends Ship {
         reloadInterval = RELOAD_INTERVAL;
         v0.set(0.5f, 0);
         hp = HP;
+        flame = new FlameMainShip(flames);
     }
 
     public void startNewGame() {
@@ -62,6 +66,14 @@ public class MainShip extends Ship {
             stop();
         }
         bulletPos.set(pos.x, pos.y + getHalfHeight());
+        flame.set(pos.x, pos.y - getHalfHeight());
+        flame.update(delta);
+    }
+
+    @Override
+    public void draw(SpriteBatch batch) {
+        super.draw(batch);
+        flame.draw(batch);
     }
 
     @Override
